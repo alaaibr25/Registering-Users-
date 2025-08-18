@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title%}Flask Authentication{%endblock%}
+{% block head %}{%endblock%}
+{% block content%}
+
+      <form class="row gy-3 form-log" >
+            <h1 class="text-center" style="color:gray;">Flask Authentication</h1>
+
+           <div class="col-12 d-grid gap-2 d-block ">
+                <a href="{{ url_for('login_page') }}" type="button" class="btn btn-secondary ">Login</a>
+            </div>
+
+            <div class="col-12 d-grid gap-2 d-block ">
+                <a href="{{ url_for('register')}}" type="button" class="btn btn-outline-secondary ">Register</a>
+            </div>
+
+
+      </form>
+
+
+{%endblock%}

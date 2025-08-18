@@ -1,0 +1,19 @@
+html, body {width:100%;
+
+
+}
+
+#div1{ background-image: linear-gradient(to right, rgba(0, 128, 128, 0), rgba(0, 128, 128, 1));
+      padding:150px 20px 20px 0px;
+      height:607px;
+       }
+
+
+
+.form-log {width:25%;}
+
+
+@media (max-width:800px){
+        .form-log{width:50%;}
+        #div1{height:615px;}
+}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title%}Log in page{%endblock%}
+{% block head %}{%endblock%}
+{% block content%}
+
+            <form class="row gy-3 form-log" >
+                <h1 class="text-center  text-light">LOG IN</h1>
+
+                <div class="col-lg-12">
+                    <input type="email" class="form-control" placeholder="email@example.com">
+                </div>
+
+                <div class="col-lg-12">
+                    <input type="password" class="form-control" placeholder="Password">
+                </div>
+
+                <div class="col-12 d-grid gap-2 d-block ">
+                    <button type="submit" class="btn btn-secondary ">Log In</button>
+                </div>
+
+
+            </form>
+{%endblock%}
