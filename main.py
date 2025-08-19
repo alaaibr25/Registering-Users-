@@ -1,5 +1,5 @@
 #🔽=============================================================🔽#
-from flask import Flask, jsonify, render_template, request, redirect, url_for
+from flask import Flask, send_from_directory, render_template, request, redirect, url_for
 app = Flask(__name__)   #🔸1# create the app
 
 #🔽=============================================================🔽#
@@ -63,11 +63,18 @@ def register():
                         pword=form.pswd.data)
         db.session.add(new_user)
         db.session.commit()
-        return "Success"
+        return render_template('secret.html', name=form.name.data)
+
 
 
     return render_template('register.html', form=form)
 
+@app.route('/download')
+def download():
+    return send_from_directory('static', path='files/cheat_sheet.pdf')
+
+
 
 
 app.run(debug=True)
+
