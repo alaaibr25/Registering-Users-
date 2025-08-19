@@ -43,6 +43,10 @@ with app.app_context():
     db.create_all()
 
 #🔽=============================================================🔽#
+from werkzeug.security import generate_password_hash
+
+#🔽=============================================================🔽#
+
 
 @app.route('/')
 def main_page():
@@ -57,10 +61,13 @@ def login_page():
 def register():
     form = UsersForm()
     if form.validate_on_submit():
+        hashed_salted_pw = generate_password_hash(form.pswd.data,
+                                                  method='pbkdf2:sha256:600000',
+                                                  salt_length=8)
         new_user = User(
                         email=form.email.data,
                         name=form.name.data,
-                        pword=form.pswd.data)
+                        pword=hashed_salted_pw)
         db.session.add(new_user)
         db.session.commit()
         return render_template('secret.html', name=form.name.data)
@@ -77,4 +84,5 @@ def download():
 
 
 app.run(debug=True)
+
 
