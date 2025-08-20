@@ -29,6 +29,8 @@ bstrap = Bootstrap5(app)
 #🔽=============================================================🔽#
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from flask_login import LoginManager, login_required, UserMixin, login_user
+
 
 class Base(DeclarativeBase):
   pass
@@ -38,7 +40,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
 db.init_app(app)    #🔸2# initialize the app with the extension
 
 #🔸3# Define Models
-class User(db.Model):
+class User(UserMixin, db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] =mapped_column(nullable=False, unique=True)
     pword: Mapped[str] =mapped_column(nullable=False)
@@ -49,7 +51,15 @@ with app.app_context():
     db.create_all()
 
 #🔽=============================================================🔽#
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
+
+#Configuring Application
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.get_or_404(User, user_id)
 
 #🔽=============================================================🔽#
 
@@ -76,19 +86,31 @@ def register():
         hashed_salted_pw = generate_password_hash(form.pswd.data,
                                                   method='pbkdf2:sha256:600000',
                                                   salt_length=8)
-        new_user = User(
-                        email=form.email.data,
-                        name=form.name.data,
-                        pword=hashed_salted_pw)
+        new_user = User()
+        new_user.email=form.email.data
+        new_user.name=form.name.data
+        new_user.pword=hashed_salted_pw
+        
         db.session.add(new_user)
         db.session.commit()
+
+        # Log in and authenticate user after adding details to database.
+        login_user(new_user)
+        
         return render_template('secret.html', name=form.name.data)
 
 
 
     return render_template('register.html', form=form)
 
+@app.route('/sec')
+@login_required
+def secret_page():
+    return render_template('secret.html')
+
+
 @app.route('/download')
+@login_required
 def download():
     return send_from_directory('static', path='files/cheat_sheet.pdf')
 
@@ -96,6 +118,7 @@ def download():
 
 
 app.run(debug=True)
+
 
 
 
