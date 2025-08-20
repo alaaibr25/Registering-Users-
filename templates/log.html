@@ -8,6 +8,16 @@
                 <h1 class="text-center  text-light">LOG IN</h1>
                  {{ form.csrf_token() }}
 
+               <div class="col-lg-12" style="text-align:center; color:red;">
+                {% with all_msg = get_flashed_messages() %}
+                {% if all_msg %}
+                {% for msg in all_msg %}
+                {{msg}}
+                {%endfor%}
+                {%endif%}
+                {%endwith%}
+                </div>
+
                 <div class="col-lg-12">
                     {{ render_field(form.log_mail, placeholder='email@example.com', form_group_classes='col-lg-12 ')}}
                     {{ render_field(form.log_pw, placeholder='Password', form_group_classes='col-lg-12')}}
@@ -21,4 +31,5 @@
 
             </form>
 {%endblock%}
+
 
