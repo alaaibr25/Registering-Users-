@@ -29,7 +29,7 @@ bstrap = Bootstrap5(app)
 #🔽=============================================================🔽#
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from flask_login import LoginManager, login_required, UserMixin, login_user
+from flask_login import LoginManager, login_required, UserMixin, login_user, current_user, logout_user
 
 
 class Base(DeclarativeBase):
@@ -72,9 +72,15 @@ def main_page():
 def login_page():
     form = LogForm()
     if form.validate_on_submit():
-        user = db.session.execute(db.select(User).where(User.email == 'alaa@yahoo.com')).scalar()
-        login_user(user)
-        flask.flash('Logged in successfully')
+        email = form.log_mail.data
+        pw = form.log_pw.data
+        
+        user = db.session.execute(db.select(User).where(User.email == email)).scalar()
+
+        if check_password_hash(user.pword, pw):
+            login_user(user)
+            flask.flash('Logged in successfully')
+            return redirect(url_for('secret_page'))
         
     return render_template('log.html', form=form)
 
@@ -97,16 +103,13 @@ def register():
         # Log in and authenticate user after adding details to database.
         login_user(new_user)
         
-        return render_template('secret.html', name=form.name.data)
-
-
-
+        return render_template('secret.html')
     return render_template('register.html', form=form)
 
 @app.route('/sec')
 @login_required
 def secret_page():
-    return render_template('secret.html')
+    return render_template('secret.html', name=current_user.name)
 
 
 @app.route('/download')
@@ -114,10 +117,14 @@ def secret_page():
 def download():
     return send_from_directory('static', path='files/cheat_sheet.pdf')
 
-
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('main_page'))
 
 
 app.run(debug=True)
+
 
 
 
