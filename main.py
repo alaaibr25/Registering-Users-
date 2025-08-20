@@ -1,6 +1,5 @@
 #🔽=============================================================🔽#
-import flask
-from flask import Flask, send_from_directory, render_template, request, redirect, url_for
+from flask import Flask, flash, send_from_directory, render_template, request, redirect, url_for
 app = Flask(__name__)   #🔸1# create the app
 
 #🔽=============================================================🔽#
@@ -74,14 +73,19 @@ def login_page():
     if form.validate_on_submit():
         email = form.log_mail.data
         pw = form.log_pw.data
-        
         user = db.session.execute(db.select(User).where(User.email == email)).scalar()
 
-        if check_password_hash(user.pword, pw):
-            login_user(user)
-            flask.flash('Logged in successfully')
-            return redirect(url_for('secret_page'))
-        
+        if user:
+            if check_password_hash(user.pword, pw):
+                login_user(user)
+                return redirect(url_for('secret_page'))
+           else: 
+               flash("Invalid Password", 'Error')
+               return redirect(url_for('login_page'))
+        else:
+            flash("This email doesn't exist", 'error')
+            return redirect(url_for('login_page'))       
+               
     return render_template('log.html', form=form)
 
 
@@ -89,21 +93,28 @@ def login_page():
 def register():
     form = UsersForm()
     if form.validate_on_submit():
-        hashed_salted_pw = generate_password_hash(form.pswd.data,
-                                                  method='pbkdf2:sha256:600000',
-                                                  salt_length=8)
-        new_user = User()
-        new_user.email=form.email.data
-        new_user.name=form.name.data
-        new_user.pword=hashed_salted_pw
+         get_user_mail = form.email.data
+         exist_user = db.session.execute(db.select(User).where(User.email == get_user_mail)).scalar()
+         if exist_user:
+            flash("You've already signed up with that email, log in instead!", "error")
+            return redirect(url_for('login_page'))
+         else:
+            hashed_salted_pw = generate_password_hash(form.pswd.data,
+                                                      method='pbkdf2:sha256:600000',
+                                                      salt_length=8)
+            new_user = User()
+            new_user.email=form.email.data
+            new_user.name=form.name.data
+            new_user.pword=hashed_salted_pw
         
-        db.session.add(new_user)
-        db.session.commit()
-
-        # Log in and authenticate user after adding details to database.
-        login_user(new_user)
+            db.session.add(new_user)
+            db.session.commit()
+    
+            # Log in and authenticate user after adding details to database.
+            login_user(new_user)
         
-        return render_template('secret.html')
+            return render_template('secret.html')
+             
     return render_template('register.html', form=form)
 
 @app.route('/sec')
@@ -124,6 +135,7 @@ def logout():
 
 
 app.run(debug=True)
+
 
 
 
