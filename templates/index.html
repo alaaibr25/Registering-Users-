@@ -5,7 +5,7 @@
 
       <form class="row gy-3 form-log" >
             <h1 class="text-center" style="color:gray;">Flask Authentication</h1>
-
+            {% if not logged_in %}
            <div class="col-12 d-grid gap-2 d-block ">
                 <a href="{{ url_for('login_page') }}" type="button" class="btn btn-secondary ">Login</a>
             </div>
@@ -13,9 +13,13 @@
             <div class="col-12 d-grid gap-2 d-block ">
                 <a href="{{ url_for('register')}}" type="button" class="btn btn-outline-secondary ">Register</a>
             </div>
+            {%else%}
+            <h1>You are already logged in</h1>
+            {%endif%}
 
 
       </form>
 
 
 {%endblock%}
+
