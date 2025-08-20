@@ -15,3 +15,6 @@ Let's use Flask-login package.
 *Flask Flash messages. They are messages that are sent to the template to be rendered just once
 *send_from_directory. Send a file from within a directory
 send_from_directory(directory, path, **kwargs)
+5- to position navbar items to the right use:
+<ul class="navbar-nav  ms-auto mb-2 mb-lg-0">
+6- The magic of the current_user
