@@ -65,7 +65,7 @@ def load_user(user_id):
 
 @app.route('/')
 def main_page():
-    return render_template('index.html')
+    return render_template('index.html', logged_in=current_user.is_authenticated)
 
 @app.route('/log', methods=['POST','GET'])
 def login_page():
@@ -86,7 +86,7 @@ def login_page():
             flash("This email doesn't exist", 'error')
             return redirect(url_for('login_page'))       
                
-    return render_template('log.html', form=form)
+    return render_template('log.html', form=form, logged_in=current_user.is_authenticated)
 
 
 @app.route('/reg', methods=['POST', 'GET'])
@@ -115,12 +115,12 @@ def register():
         
             return render_template('secret.html')
              
-    return render_template('register.html', form=form)
+    return render_template('register.html', form=form, logged_in=current_user.is_authenticated)
 
 @app.route('/sec')
 @login_required
 def secret_page():
-    return render_template('secret.html', name=current_user.name)
+    return render_template('secret.html', name=current_user.name, logged_in=True)
 
 
 @app.route('/download')
@@ -135,6 +135,7 @@ def logout():
 
 
 app.run(debug=True)
+
 
 
 
