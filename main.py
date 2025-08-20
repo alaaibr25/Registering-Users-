@@ -1,4 +1,5 @@
 #🔽=============================================================🔽#
+import flask
 from flask import Flask, send_from_directory, render_template, request, redirect, url_for
 app = Flask(__name__)   #🔸1# create the app
 
@@ -15,6 +16,11 @@ class UsersForm(FlaskForm):
     email = EmailField(label='', validators=[DataRequired()])
     pswd = PasswordField(label='', validators=[DataRequired()])
     submit = SubmitField('Sign Me In')
+
+class LogForm(FlaskForm):
+    log_mail = EmailField(label='', validators=[DataRequired()])
+    log_pw = PasswordField(label='', validators=[DataRequired()])
+    log_submit = SubmitField('Log In')
 
 #🔽=============================================================🔽#
 from flask_bootstrap import Bootstrap5
@@ -52,9 +58,15 @@ from werkzeug.security import generate_password_hash
 def main_page():
     return render_template('index.html')
 
-@app.route('/log')
+@app.route('/log', methods=['POST','GET'])
 def login_page():
-    return render_template('log.html')
+    form = LogForm()
+    if form.validate_on_submit():
+        user = db.session.execute(db.select(User).where(User.email == 'alaa@yahoo.com')).scalar()
+        login_user(user)
+        flask.flash('Logged in successfully')
+        
+    return render_template('log.html', form=form)
 
 
 @app.route('/reg', methods=['POST', 'GET'])
@@ -84,5 +96,6 @@ def download():
 
 
 app.run(debug=True)
+
 
 
